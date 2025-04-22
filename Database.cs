@@ -1,104 +1,67 @@
 using System;
-using Microsoft.Data.Sqlite;
+using System.Collections.Generic;
+using System.Linq;
 
 public static class Database
 {
-    private const string ConnectionString = "Data Source=company.db";
+    public static List<Employee> Employees = new List<Employee>();
+    private static int _nextId = 1;
 
     public static void Initialize()
     {
-        using var connection = new SqliteConnection(ConnectionString);
-        connection.Open();
-
-        // Пример: создаём таблицу, если не существует
-        string createTableQuery = @"
-            CREATE TABLE IF NOT EXISTS Employees (
-                Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                Name TEXT NOT NULL,
-                Position TEXT NOT NULL
-            );
-        ";
-
-        using var command = new SqliteCommand(createTableQuery, connection);
-        command.ExecuteNonQuery();
-
-        Console.WriteLine("База данных и таблица Employees готовы!");
+        // Инициализация с парой примеров
+        Employees.Add(new Employee { Id = _nextId++, Name = "Иванов", Position = "Employee", Salary = 50000 });
+        Employees.Add(new Employee { Id = _nextId++, Name = "Петров", Position = "Manager", Salary = 80000 });
     }
 
-    public static void AddEmployee(string name, string position)
+    public static void AddEmployee(Employee employee)
     {
-        using var connection = new SqliteConnection(ConnectionString);
-        connection.Open();
-
-        string insertQuery = "INSERT INTO Employees (Name, Position) VALUES (@name, @position);";
-
-        using var command = new SqliteCommand(insertQuery, connection);
-        command.Parameters.AddWithValue("@name", name);
-        command.Parameters.AddWithValue("@position", position);
-
-        command.ExecuteNonQuery();
-
+        employee.Id = _nextId++;
+        Employees.Add(employee);
         Console.WriteLine("Сотрудник добавлен.");
     }
 
     public static void ListEmployees()
     {
-        using var connection = new SqliteConnection(ConnectionString);
-        connection.Open();
-
-        string selectQuery = "SELECT Id, Name, Position FROM Employees;";
-
-        using var command = new SqliteCommand(selectQuery, connection);
-        using var reader = command.ExecuteReader();
-
-        Console.WriteLine("\nСписок сотрудников:");
-        while (reader.Read())
+        Console.WriteLine("\n=== Список сотрудников ===");
+        foreach (var emp in Employees)
         {
-            int id = reader.GetInt32(0);
-            string name = reader.GetString(1);
-            string position = reader.GetString(2);
-
-            Console.WriteLine($"[{id}] {name} - {position}");
+            Console.WriteLine($"{emp.Id}: {emp.Name}, {emp.Position}, Зарплата: {emp.Salary}");
         }
     }
 
-    public static void UpdateEmployee(int id, string newName, string newPosition)
+    public static void UpdateEmployee(Employee updated)
     {
-    using var connection = new SqliteConnection(ConnectionString);
-    connection.Open();
-
-    string updateQuery = "UPDATE Employees SET Name = @name, Position = @position WHERE Id = @id;";
-
-    using var command = new SqliteCommand(updateQuery, connection);
-    command.Parameters.AddWithValue("@name", newName);
-    command.Parameters.AddWithValue("@position", newPosition);
-    command.Parameters.AddWithValue("@id", id);
-
-    int rowsAffected = command.ExecuteNonQuery();
-
-    if (rowsAffected > 0)
-        Console.WriteLine("Сотрудник обновлён.");
-    else
-        Console.WriteLine("Сотрудник с таким ID не найден.");
+        var existing = Employees.FirstOrDefault(e => e.Id == updated.Id);
+        if (existing != null)
+        {
+            existing.Name = updated.Name;
+            existing.Position = updated.Position;
+            existing.Salary = updated.Salary;
+            Console.WriteLine("Сотрудник обновлён.");
+        }
+        else
+        {
+            Console.WriteLine("Сотрудник не найден.");
+        }
     }
 
     public static void DeleteEmployee(int id)
     {
-        using var connection = new SqliteConnection(ConnectionString);
-        connection.Open();
-
-        string deleteQuery = "DELETE FROM Employees WHERE Id = @id;";
-
-        using var command = new SqliteCommand(deleteQuery, connection);
-        command.Parameters.AddWithValue("@id", id);
-
-        int rowsAffected = command.ExecuteNonQuery();
-
-        if (rowsAffected > 0)
+        var emp = Employees.FirstOrDefault(e => e.Id == id);
+        if (emp != null)
+        {
+            Employees.Remove(emp);
             Console.WriteLine("Сотрудник удалён.");
+        }
         else
-            Console.WriteLine("Сотрудник с таким ID не найден.");
+        {
+            Console.WriteLine("Сотрудник не найден.");
+        }
     }
 
+    public static Employee GetEmployeeById(int id)
+    {
+        return Employees.FirstOrDefault(e => e.Id == id);
+    }
 }
-

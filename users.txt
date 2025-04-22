@@ -1,0 +1,9 @@
+sultan;1234;employee;Sultan Dzholdoshbaev
+ariet;1234;manager;Ariet Nasirdinov
+altynai;1234;hr;Altynai Altynau
+egor;1234;employee;Егор Иванов
+andrey;1234;manager;Андрей Гаврилов
+aisuluu;1234;marketing;Айсулуу Боронбаева
+sergey;1234;hr;Сергей Иванов
+maksat;1234;sale-manager;Максат Таштанов
+arsen;1234;director;Арсен Маркарян
