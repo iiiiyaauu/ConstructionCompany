@@ -1,24 +1,28 @@
 using System;
 using System.Linq;
 
-public static class BudgetManager
+namespace AIS_StroitelnayaKompaniya
 {
-    public static double CalculateTotalBudget()
+    public static class BudgetManager
     {
-        return Database.Employees.Sum(e => e.Salary);
-    }
-
-    public static void ChangeSalary(int employeeId, double newSalary)
-    {
-        var employee = Database.GetEmployeeById(employeeId);
-        if (employee != null)
+        public static double CalculateTotalBudget()
         {
-            employee.Salary = newSalary;
-            Console.WriteLine($"Зарплата сотрудника с ID {employeeId} изменена на {newSalary}");
+            var employees = Database.GetAllEmployees();
+            return employees.Sum(e => e.Salary);
         }
-        else
+
+        public static void ChangeSalary(int id, double newSalary)
         {
-            Console.WriteLine("Сотрудник не найден.");
+            var employee = Database.GetEmployeeById(id);
+            if (employee != null)
+            {
+                employee.Salary = newSalary;
+                Console.WriteLine($"Зарплата сотрудника {employee.Name} изменена на {newSalary}.");
+            }
+            else
+            {
+                Console.WriteLine("Сотрудник не найден.");
+            }
         }
     }
 }

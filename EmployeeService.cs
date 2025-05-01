@@ -1,83 +1,74 @@
-using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
-public class EmployeeService
+namespace AIS_StroitelnayaKompaniya
 {
-    private string _connectionString = "Data Source=company.db";
-
-    public void Create(Employee employee)
+    public static class EmployeeService
     {
-        using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
+        private static List<Employee> employees = new List<Employee>();
+        private static int nextId = 1;
 
-        var command = connection.CreateCommand();
-        command.CommandText =
-        @"
-            INSERT INTO Employees (Name, Position, Salary)
-            VALUES ($name, $position, $salary);
-        ";
-        command.Parameters.AddWithValue("$name", employee.Name);
-        command.Parameters.AddWithValue("$position", employee.Position);
-        command.Parameters.AddWithValue("$salary", employee.Salary);
-
-        command.ExecuteNonQuery();
-    }
-
-    public List<Employee> GetAll()
-    {
-        var employees = new List<Employee>();
-
-        using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
-
-        var command = connection.CreateCommand();
-        command.CommandText = "SELECT Id, Name, Position, Salary FROM Employees;";
-
-        using var reader = command.ExecuteReader();
-        while (reader.Read())
+        public static void AddEmployee(Employee employee)
         {
-            employees.Add(new Employee
-            {
-                Id = reader.GetInt32(0),
-                Name = reader.GetString(1),
-                Position = reader.GetString(2),
-                Salary = reader.GetDouble(3)
-            });
+            employee.Id = nextId++;
+            employees.Add(employee);
         }
 
-        return employees;
-    }
+        public static void UpdateEmployee(Employee updatedEmployee)
+        {
+            var existing = employees.FirstOrDefault(e => e.Id == updatedEmployee.Id);
+            if (existing != null)
+            {
+                existing.Name = updatedEmployee.Name;
+                existing.Position = updatedEmployee.Position;
+                existing.Salary = updatedEmployee.Salary;
 
-    public void Update(Employee employee)
-    {
-        using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
+                if (existing is Manager manager && updatedEmployee is Manager updatedManager)
+                {
+                    manager.TeamSize = updatedManager.TeamSize;
+                }
+                else if (existing is Engineer engineer && updatedEmployee is Engineer updatedEngineer)
+                {
+                    engineer.Specialization = updatedEngineer.Specialization;
+                }
+            }
+        }
 
-        var command = connection.CreateCommand();
-        command.CommandText =
-        @"
-            UPDATE Employees
-            SET Name = $name, Position = $position, Salary = $salary
-            WHERE Id = $id;
-        ";
-        command.Parameters.AddWithValue("$id", employee.Id);
-        command.Parameters.AddWithValue("$name", employee.Name);
-        command.Parameters.AddWithValue("$position", employee.Position);
-        command.Parameters.AddWithValue("$salary", employee.Salary);
+        public static void DeleteEmployee(int id)
+        {
+            var employee = employees.FirstOrDefault(e => e.Id == id);
+            if (employee != null)
+            {
+                employees.Remove(employee);
+            }
+        }
 
-        command.ExecuteNonQuery();
-    }
+        public static void ListEmployees()
+        {
+            foreach (var employee in employees)
+            {
+                Console.WriteLine($"ID: {employee.Id} | Имя: {employee.Name} | Должность: {employee.Position} | Зарплата: {employee.Salary}");
 
-    public void Delete(int id)
-    {
-        using var connection = new SqliteConnection(_connectionString);
-        connection.Open();
+                if (employee is Manager manager)
+                {
+                    Console.WriteLine($"  Размер команды: {manager.TeamSize}");
+                }
+                else if (employee is Engineer engineer)
+                {
+                    Console.WriteLine($"  Специализация: {engineer.Specialization}");
+                }
+            }
+        }
 
-        var command = connection.CreateCommand();
-        command.CommandText = "DELETE FROM Employees WHERE Id = $id;";
-        command.Parameters.AddWithValue("$id", id);
+        public static double CalculateTotalBudget()
+        {
+            return employees.Sum(e => e.Salary);
+        }
 
-        command.ExecuteNonQuery();
+        public static Employee GetEmployeeById(int id)
+        {
+            return employees.FirstOrDefault(e => e.Id == id);
+        }
     }
 }

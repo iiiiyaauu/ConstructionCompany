@@ -2,66 +2,63 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public static class Database
+namespace AIS_StroitelnayaKompaniya
 {
-    public static List<Employee> Employees = new List<Employee>();
-    private static int _nextId = 1;
-
-    public static void Initialize()
+    public static class Database
     {
-        // Инициализация с парой примеров
-        Employees.Add(new Employee { Id = _nextId++, Name = "Иванов", Position = "Employee", Salary = 50000 });
-        Employees.Add(new Employee { Id = _nextId++, Name = "Петров", Position = "Manager", Salary = 80000 });
-    }
+        private static List<Employee> employees = new List<Employee>();
+        private static int nextId = 1;
 
-    public static void AddEmployee(Employee employee)
-    {
-        employee.Id = _nextId++;
-        Employees.Add(employee);
-        Console.WriteLine("Сотрудник добавлен.");
-    }
-
-    public static void ListEmployees()
-    {
-        Console.WriteLine("\n=== Список сотрудников ===");
-        foreach (var emp in Employees)
+        public static void Initialize()
         {
-            Console.WriteLine($"{emp.Id}: {emp.Name}, {emp.Position}, Зарплата: {emp.Salary}");
+            // Пример начальных данных
+            employees.Add(new Employee { Id = nextId++, Name = "Иванов", Position = "Engineer", Salary = 50000 });
+            employees.Add(new Employee { Id = nextId++, Name = "Петров", Position = "Manager", Salary = 60000 });
         }
-    }
 
-    public static void UpdateEmployee(Employee updated)
-    {
-        var existing = Employees.FirstOrDefault(e => e.Id == updated.Id);
-        if (existing != null)
+        public static List<Employee> GetAllEmployees()
         {
-            existing.Name = updated.Name;
-            existing.Position = updated.Position;
-            existing.Salary = updated.Salary;
-            Console.WriteLine("Сотрудник обновлён.");
+            return employees;
         }
-        else
-        {
-            Console.WriteLine("Сотрудник не найден.");
-        }
-    }
 
-    public static void DeleteEmployee(int id)
-    {
-        var emp = Employees.FirstOrDefault(e => e.Id == id);
-        if (emp != null)
+        public static Employee GetEmployeeById(int id)
         {
-            Employees.Remove(emp);
-            Console.WriteLine("Сотрудник удалён.");
+            return employees.FirstOrDefault(e => e.Id == id);
         }
-        else
-        {
-            Console.WriteLine("Сотрудник не найден.");
-        }
-    }
 
-    public static Employee GetEmployeeById(int id)
-    {
-        return Employees.FirstOrDefault(e => e.Id == id);
+        public static void AddEmployee(Employee employee)
+        {
+            employee.Id = nextId++;
+            employees.Add(employee);
+        }
+
+        public static void UpdateEmployee(Employee updatedEmployee)
+        {
+            var existing = GetEmployeeById(updatedEmployee.Id);
+            if (existing != null)
+            {
+                existing.Name = updatedEmployee.Name;
+                existing.Position = updatedEmployee.Position;
+                existing.Salary = updatedEmployee.Salary;
+            }
+        }
+
+        public static void DeleteEmployee(int id)
+        {
+            var employee = GetEmployeeById(id);
+            if (employee != null)
+            {
+                employees.Remove(employee);
+            }
+        }
+
+        public static void ListEmployees()
+        {
+            Console.WriteLine("\nСписок сотрудников:");
+            foreach (var emp in employees)
+            {
+                Console.WriteLine($"ID: {emp.Id}, Имя: {emp.Name}, Должность: {emp.Position}, Зарплата: {emp.Salary}");
+            }
+        }
     }
 }

@@ -1,5 +1,3 @@
-using System;
-
 namespace AIS_StroitelnayaKompaniya
 {
     public abstract class User
@@ -38,36 +36,6 @@ namespace AIS_StroitelnayaKompaniya
             Console.WriteLine("1. Зоны охвата");
             Console.WriteLine("2. Бюджет рекламы");
             Console.WriteLine("3. Выйти");
-        }
-    }
-
-    public class HR : User
-    {
-        public override void ShowMenu()
-        {
-            Console.WriteLine("Меню HR:");
-            Console.WriteLine("1. Просмотр сотрудников");
-            Console.WriteLine("2. Выйти");
-        }
-    }
-
-    public class Manager : User
-    {
-        public override void ShowMenu()
-        {
-            Console.WriteLine("Меню Менеджера:");
-            Console.WriteLine("1. Просмотр задач");
-            Console.WriteLine("2. Выйти");
-        }
-    }
-
-    public class SaleManager : User
-    {
-        public override void ShowMenu()
-        {
-            Console.WriteLine("Меню Агента по продажам:");
-            Console.WriteLine("1. Просмотр клиентов");
-            Console.WriteLine("2. Выйти");
         }
     }
 }
