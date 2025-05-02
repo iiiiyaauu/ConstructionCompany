@@ -1,5 +1,4 @@
-﻿using System;
-using AIS_StroitelnayaKompaniya;
+﻿using AIS_StroitelnayaKompaniya;
 
 class Program
 {
@@ -7,54 +6,80 @@ class Program
     {
         Database.Initialize();
 
+        Console.WriteLine("Введите имя пользователя: ");
+        string username = Console.ReadLine();
+
+        Console.WriteLine("Введите роль (Director / Worker / Marketing): ");
+        string role = Console.ReadLine();
+
+        User currentUser = role switch
+        {
+            "Director" => new Director { Username = username },
+            "Worker" => new Worker { Username = username },
+            "Marketing" => new Marketing { Username = username },
+            _ => null
+        };
+
+        if (currentUser == null)
+        {
+            Console.WriteLine("Неверная роль.");
+            return;
+        }
+
         while (true)
         {
-            Console.WriteLine("\n==== МЕНЮ ====");
-            Console.WriteLine("1. Показать всех сотрудников");
-            Console.WriteLine("2. Показать общий бюджет");
-            Console.WriteLine("3. Изменить зарплату сотрудника");
-            Console.WriteLine("0. Выход");
+            currentUser.ShowMenu();
             Console.Write("Выберите действие: ");
-
             string choice = Console.ReadLine();
 
-            switch (choice)
+            if (role == "Director")
             {
-                case "1":
-                    Database.ListEmployees();
-                    break;
-
-                case "2":
-                    double budget = BudgetManager.CalculateTotalBudget();
-                    Console.WriteLine($"Общий бюджет на зарплаты: {budget} руб.");
-                    break;
-
-                case "3":
-                    Console.Write("Введите ID сотрудника: ");
-                    if (int.TryParse(Console.ReadLine(), out int id))
-                    {
+                switch (choice)
+                {
+                    case "1":
+                        Console.WriteLine($"Общий бюджет: {BudgetManager.CalculateTotalBudget()}");
+                        break;
+                    case "2":
+                        Console.Write("Введите ID сотрудника: ");
+                        int id = int.Parse(Console.ReadLine());
                         Console.Write("Введите новую зарплату: ");
-                        if (double.TryParse(Console.ReadLine(), out double newSalary))
-                        {
-                            BudgetManager.ChangeSalary(id, newSalary);
-                        }
-                        else
-                        {
-                            Console.WriteLine("Ошибка: введите корректную зарплату.");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Ошибка: введите корректный ID.");
-                    }
-                    break;
-
-                case "0":
-                    return;
-
-                default:
-                    Console.WriteLine("Неверный выбор.");
-                    break;
+                        double salary = double.Parse(Console.ReadLine());
+                        BudgetManager.ChangeSalary(id, salary);
+                        break;
+                    case "0":
+                        return;
+                    default:
+                        Console.WriteLine("Неверный ввод.");
+                        break;
+                }
+            }
+            else if (role == "Worker")
+            {
+                switch (choice)
+                {
+                    case "1":
+                        Console.WriteLine("Ваша зарплата: (не реализовано — зависит от логики авторизации)");
+                        break;
+                    case "0":
+                        return;
+                    default:
+                        Console.WriteLine("Неверный ввод.");
+                        break;
+                }
+            }
+            else if (role == "Marketing")
+            {
+                switch (choice)
+                {
+                    case "1":
+                        Console.WriteLine("Бюджет на рекламу: (заглушка)");
+                        break;
+                    case "0":
+                        return;
+                    default:
+                        Console.WriteLine("Неверный ввод.");
+                        break;
+                }
             }
         }
     }

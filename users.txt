@@ -1,6 +1,6 @@
-sultan;1234;employee;Sultan Dzholdoshbaev
-ariet;1234;manager;Ariet Nasirdinov
-altynai;1234;hr;Altynai Altynau
+sultan;1234;employee;Султан Джолдошбаев
+ariet;1234;manager;Ариет насирдинов
+altynai;1234;hr;Алтынай Алтынай
 egor;1234;employee;Егор Иванов
 andrey;1234;manager;Андрей Гаврилов
 aisuluu;1234;marketing;Айсулуу Боронбаева

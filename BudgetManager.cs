@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-
 namespace AIS_StroitelnayaKompaniya
 {
     public static class BudgetManager
@@ -13,11 +10,12 @@ namespace AIS_StroitelnayaKompaniya
 
         public static void ChangeSalary(int id, double newSalary)
         {
-            var employee = Database.GetEmployeeById(id);
-            if (employee != null)
+            var emp = Database.GetEmployeeById(id);
+            if (emp != null)
             {
-                employee.Salary = newSalary;
-                Console.WriteLine($"Зарплата сотрудника {employee.Name} изменена на {newSalary}.");
+                emp.Salary = newSalary;
+                Database.UpdateEmployee(emp);
+                Console.WriteLine("Зарплата обновлена.");
             }
             else
             {
