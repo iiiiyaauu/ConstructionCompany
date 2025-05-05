@@ -2,9 +2,8 @@ namespace AIS_StroitelnayaKompaniya
 {
     public class Employee
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Position { get; set; }
+        public string Username { get; set; }
+        public string Role { get; set; }
         public double Salary { get; set; }
     }
 }

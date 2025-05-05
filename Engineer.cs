@@ -1,7 +1,15 @@
+using System;
+
 namespace AIS_StroitelnayaKompaniya
 {
-    public class Engineer : Employee
+    public class Engineer : User
     {
-        public string Specialization { get; set; }
+        public override void ShowMenu()
+        {
+            Console.WriteLine("\nМеню Инженера:");
+            Console.WriteLine("1. Инженерные задачи");
+            Console.WriteLine("2. Зарплата");
+            Console.WriteLine("0. Выйти");
+        }
     }
 }

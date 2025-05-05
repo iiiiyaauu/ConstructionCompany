@@ -1,4 +1,5 @@
-﻿using AIS_StroitelnayaKompaniya;
+﻿using System;
+using AIS_StroitelnayaKompaniya;
 
 class Program
 {
@@ -6,23 +7,17 @@ class Program
     {
         Database.Initialize();
 
-        Console.WriteLine("Введите имя пользователя: ");
+        Console.Write("Введите имя пользователя: ");
         string username = Console.ReadLine();
 
-        Console.WriteLine("Введите роль (Director / Worker / Marketing): ");
+        Console.Write("Введите роль (Director / Manager / Engineer / Worker): ");
         string role = Console.ReadLine();
 
-        User currentUser = role switch
-        {
-            "Director" => new Director { Username = username },
-            "Worker" => new Worker { Username = username },
-            "Marketing" => new Marketing { Username = username },
-            _ => null
-        };
+        User currentUser = CreateUserByRole(username, role);
 
         if (currentUser == null)
         {
-            Console.WriteLine("Неверная роль.");
+            Console.WriteLine("Неизвестная роль.");
             return;
         }
 
@@ -32,55 +27,63 @@ class Program
             Console.Write("Выберите действие: ");
             string choice = Console.ReadLine();
 
-            if (role == "Director")
+            switch (choice)
             {
-                switch (choice)
-                {
-                    case "1":
-                        Console.WriteLine($"Общий бюджет: {BudgetManager.CalculateTotalBudget()}");
-                        break;
-                    case "2":
-                        Console.Write("Введите ID сотрудника: ");
-                        int id = int.Parse(Console.ReadLine());
+                case "1":
+                    if (currentUser is Director || currentUser is Manager)
+                    {
+                        double budget = BudgetManager.CalculateTotalBudget();
+                        Console.WriteLine($"Общий бюджет на зарплаты: {budget} руб.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Ваша зарплата: {Database.GetSalary(currentUser.Username)} руб.");
+                    }
+                    break;
+
+                case "2":
+                    if (currentUser is Director || currentUser is Manager)
+                    {
+                        Console.Write("Введите имя сотрудника: ");
+                        string name = Console.ReadLine();
+
                         Console.Write("Введите новую зарплату: ");
-                        double salary = double.Parse(Console.ReadLine());
-                        BudgetManager.ChangeSalary(id, salary);
-                        break;
-                    case "0":
-                        return;
-                    default:
-                        Console.WriteLine("Неверный ввод.");
-                        break;
-                }
-            }
-            else if (role == "Worker")
-            {
-                switch (choice)
-                {
-                    case "1":
-                        Console.WriteLine("Ваша зарплата: (не реализовано — зависит от логики авторизации)");
-                        break;
-                    case "0":
-                        return;
-                    default:
-                        Console.WriteLine("Неверный ввод.");
-                        break;
-                }
-            }
-            else if (role == "Marketing")
-            {
-                switch (choice)
-                {
-                    case "1":
-                        Console.WriteLine("Бюджет на рекламу: (заглушка)");
-                        break;
-                    case "0":
-                        return;
-                    default:
-                        Console.WriteLine("Неверный ввод.");
-                        break;
-                }
+                        if (double.TryParse(Console.ReadLine(), out double newSalary))
+                        {
+                            bool updated = BudgetManager.ChangeSalary(name, newSalary);
+                            Console.WriteLine(updated ? "Зарплата обновлена." : "Сотрудник не найден.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Некорректная сумма.");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("У вас нет прав на изменение зарплаты.");
+                    }
+                    break;
+
+                case "3":
+                    Console.WriteLine("Выход...");
+                    return;
+
+                default:
+                    Console.WriteLine("Неверный выбор.");
+                    break;
             }
         }
+    }
+
+    static User CreateUserByRole(string username, string role)
+    {
+        return role.ToLower() switch
+        {
+            "director" => new Director { Username = username },
+            "manager" => new Manager { Username = username },
+            "engineer" => new Engineer { Username = username },
+            "worker" => new Worker { Username = username },
+            _ => null
+        };
     }
 }
